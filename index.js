@@ -30,12 +30,15 @@ async function run() {
 
     const toysCollection = client.db("toysDB").collection("toys");
 
-
+    
 
 
     app.post('/toys', async(req, res) => {
       const toys = req.body;
       console.log(toys);
+      const result = await toysCollection.insertOne(toys);
+      res.send(result);
+
 
     });
 
