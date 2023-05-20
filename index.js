@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 
-console.log(process.env.DB_user)
+
 
 const uri = `mongodb+srv://${process.env.DB_user}:${process.env.DB_pass}@cluster0.lo1m20r.mongodb.net/?retryWrites=true&w=majority`;
 
