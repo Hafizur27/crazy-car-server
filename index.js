@@ -34,10 +34,6 @@ async function run() {
     const indexOptions = { name: "nameCategory" }; 
     const result = await toysCollection.createIndex(indexKeys, indexOptions);
     
-
-    app.get('/toys', async(req, res) => {
-      
-    })
     
     app.get('/toys/:text', async(req, res) => {
       if(req.params.text == 'Sports' || req.params.text == 'Truck' || req.params.text == 'Regular'){
@@ -46,6 +42,7 @@ async function run() {
       }
       const result = await toysCollection.find().toArray();
       res.send(result);
+     
       
     });
 
@@ -93,8 +90,13 @@ async function run() {
       console.log(body);
       const result = await toysCollection.insertOne(body);
       res.send(result);
+    });
 
-
+    app.delete('/toys/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await toysCollection.deleteOne(query);
+      res.send(result);
     });
 
 
