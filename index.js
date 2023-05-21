@@ -30,6 +30,11 @@ async function run() {
 
     const toysCollection = client.db("toysDB").collection("toys");
 
+    const indexKeys = { name: 1, category: 1 }; 
+    const indexOptions = { name: "nameCategory" }; 
+    const result = await toysCollection.createIndex(indexKeys, indexOptions);
+    
+
     app.get('/toys', async(req, res) => {
       const result = await toysCollection.find().toArray();
       res.send(result);
@@ -47,6 +52,24 @@ async function run() {
       const result = await toysCollection.find().limit(20).sort({createdAt: -1}).toArray();
       res.send(result);
     });
+
+    app.get("/searchToyByText/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await toysCollection
+        .find({
+          $or: [
+            { name: { $regex: text, $options: "i" } },
+            { category: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
+
+    /* app.get('/allToys/:name', async(req,res) =>{
+      const result = await toysCollection.find({name: req.params.name}).toArray();
+      res.send(result);
+    }); */
 
     app.get('/myToys', async(req, res) => {
       console.log(req.query.email)
