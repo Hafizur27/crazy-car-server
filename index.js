@@ -37,22 +37,33 @@ async function run() {
     
     app.get('/toys/:text', async(req, res) => {
       if(req.params.text == 'Sports' || req.params.text == 'Truck' || req.params.text == 'Regular'){
-        const result = await toysCollection.find({category: req.params.text}).toArray();
+        const result = await toysCollection.find({category: req.params.text}).sort({createdAt: -1}).toArray();
         return res.send(result);
       }
       
     });
-    
+
     app.get('/allToys', async(req, res) =>{
-      const result = await toysCollection.find().limit(20).toArray();
+      const result = await toysCollection.find().limit(20).sort({createdAt: -1}).toArray();
       res.send(result);
-    })
+    });
+
+    app.get('/myToys', async(req, res) => {
+      console.log(req.query.email)
+      let query = {};
+      if(req.query?.email){
+        query = { email: req.query.email }
+      }
+      const result = await toysCollection.find(query).toArray();
+      res.send(result);
+    });
     
 
     app.post('/toys', async(req, res) => {
-      const toys = req.body;
-      console.log(toys);
-      const result = await toysCollection.insertOne(toys);
+      const body = req.body;
+      body.createdAt = new Date();
+      console.log(body);
+      const result = await toysCollection.insertOne(body);
       res.send(result);
 
 
