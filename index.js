@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 
+
 app.use(cors());
 app.use(express.json());
 
@@ -25,13 +26,9 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
    
-    await client.connect();
+    
 
     const toysCollection = client.db("toysDB").collection("toys");
-
-    const indexKeys = { name: 1, category: 1 }; 
-    const indexOptions = { name: "nameCategory" }; 
-    const result = await toysCollection.createIndex(indexKeys, indexOptions);
     
     
     app.get('/toys/:text', async(req, res) => {
@@ -46,7 +43,8 @@ async function run() {
     });
 
     app.get('/allToys', async(req, res) =>{
-      const result = await toysCollection.find().limit(20).sort({createdAt: -1}).toArray();
+
+      const result = await toysCollection.find().limit(20).toArray();
       res.send(result);
     });
 
@@ -70,7 +68,7 @@ async function run() {
       if(req.query?.email){
         query = { email: req.query.email }
       }
-      const result = await toysCollection.find(query).sort({createdAt: -1}).toArray();
+      const result = await toysCollection.find(query).sort({ price : -1}).toArray();
       res.send(result);
     });
 
@@ -85,8 +83,6 @@ async function run() {
 
     app.post('/toys', async(req, res) => {
       const body = req.body;
-      body.createdAt = new Date();
-      console.log(body);
       const result = await toysCollection.insertOne(body);
       res.send(result);
     });
@@ -115,9 +111,6 @@ async function run() {
       res.send(result);
     });
 
-
-    
-    await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     
